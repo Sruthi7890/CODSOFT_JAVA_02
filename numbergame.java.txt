@@ -1,0 +1,82 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class NumberGameGUI extends JFrame {
+    private int randomNumber;
+    private JTextField guessField;
+    private JLabel resultLabel;
+    private int attemptsLeft;
+    private int score;
+
+    public NumberGameGUI() {
+        setTitle("Number Guessing Game");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Generate a random number between 1 and 100
+        randomNumber = (int) (Math.random() * 100) + 1;
+        attemptsLeft = 5; // Set the number of attempts
+        score = 100; // Set the initial score
+
+        JLabel guessLabel = new JLabel("Enter your guess:");
+        guessField = new JTextField(10);
+        JButton guessButton = new JButton("Guess");
+        resultLabel = new JLabel("");
+        JLabel attemptsLabel = new JLabel("Attempts left: " + attemptsLeft);
+        JLabel scoreLabel = new JLabel("Score: " + score);
+
+        guessButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                checkGuess();
+            }
+        });
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 1));
+        panel.add(guessLabel);
+        panel.add(guessField);
+        panel.add(guessButton);
+        panel.add(resultLabel);
+
+        getContentPane().add(panel, BorderLayout.CENTER);
+        getContentPane().add(attemptsLabel, BorderLayout.NORTH);
+        getContentPane().add(scoreLabel, BorderLayout.SOUTH);
+    }
+
+    private void checkGuess() {
+        String guessText = guessField.getText();
+        try {
+            int guess = Integer.parseInt(guessText);
+            if (guess < 1 || guess > 100) {
+                JOptionPane.showMessageDialog(this, "Please enter a number between 1 and 100");
+            } else {
+                attemptsLeft--;
+                if (guess == randomNumber) {
+                    resultLabel.setText("Congratulations! You've guessed the number.");
+                } else if (guess < randomNumber) {
+                    resultLabel.setText("Too low! Try again.");
+                } else {
+                    resultLabel.setText("Too high! Try again.");
+                }
+                if (attemptsLeft == 0) {
+                    guessField.setEnabled(false);
+                    JOptionPane.showMessageDialog(this, "No more attempts left. The number was: " + randomNumber);
+                }
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid number");
+        }
+        guessField.setText("");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new NumberGameGUI().setVisible(true);
+            }
+        });
+    }
+}
